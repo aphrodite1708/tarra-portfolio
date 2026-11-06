@@ -12,6 +12,7 @@ export interface FolderDef {
   bodyColor: string
   tabColor: string
   textColor: string
+  image: string
   items: SubItem[]
 }
 
@@ -20,9 +21,10 @@ export const FOLDERS: FolderDef[] = [
     id: 'accounting',
     label: 'Accounting & Consulting',
     shortLabel: 'Accounting',
-    bodyColor: '#E9C8D2',
-    tabColor: '#C9A0AE',
-    textColor: '#5C1E30',
+    bodyColor: '#D9A8B4',
+    tabColor: '#B8818F',
+    textColor: '#FFFFFF',
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80&fit=crop',
     items: [
       { id: 'bookkeeping', label: 'Accounting & Bookkeeping' },
       { id: 'recruiting', label: 'Recruiting & Talent Sourcing' },
@@ -32,9 +34,10 @@ export const FOLDERS: FolderDef[] = [
     id: 'executive',
     label: 'Executive Assistance',
     shortLabel: 'Executive',
-    bodyColor: '#EDE3D4',
-    tabColor: '#C8B09A',
-    textColor: '#3E2A18',
+    bodyColor: '#C8B09A',
+    tabColor: '#A08068',
+    textColor: '#FFFFFF',
+    image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80&fit=crop',
     items: [
       { id: 'operations', label: 'Executive Operations' },
       { id: 'partnerships', label: 'Partnerships' },
@@ -48,6 +51,7 @@ export const FOLDERS: FolderDef[] = [
     bodyColor: '#BE3D4C',
     tabColor: '#8E2535',
     textColor: '#FFFFFF',
+    image: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=900&q=80&fit=crop',
     items: [
       { id: 'process', label: 'Process' },
       { id: 'casestudy', label: 'Case Study' },
@@ -58,9 +62,10 @@ export const FOLDERS: FolderDef[] = [
     id: 'marketing',
     label: 'Marketing & Sales',
     shortLabel: 'Marketing',
-    bodyColor: '#8A7E76',
-    tabColor: '#635C56',
+    bodyColor: '#7A6E66',
+    tabColor: '#5A5450',
     textColor: '#FFFFFF',
+    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=80&fit=crop',
     items: [
       { id: 'socialmedia', label: 'Social Media Marketing' },
       { id: 'sales', label: 'Sales & Business Development' },

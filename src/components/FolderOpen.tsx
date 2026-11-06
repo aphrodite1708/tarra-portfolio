@@ -56,30 +56,42 @@ export default function FolderOpen({ folder, onClose }: FolderOpenProps) {
         </h2>
       </div>
 
-      {/* Sub-folder panels */}
-      <div className="subfolder-grid" style={{ '--panel-count': folder.items.length } as React.CSSProperties}>
+      {/* Sub-folder panels — jreami style */}
+      <div className="subfolder-grid">
         {folder.items.map((item) => (
           <motion.div
             key={item.id}
             className="subfolder-panel"
             variants={panelVariants}
-            whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(0,0,0,0.18)', transition: { duration: 0.2 } }}
+            whileHover={{ y: -6, boxShadow: '0 24px 64px rgba(0,0,0,0.22)', transition: { duration: 0.2 } }}
             style={{
-              background: isLight ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.1)',
-              borderColor: isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)',
+              backgroundImage: `url(${folder.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              borderColor: 'rgba(255,255,255,0.15)',
+              position: 'relative',
             }}
           >
+            {/* Color tint over panel image */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: folder.bodyColor,
+              opacity: 0.5,
+              pointerEvents: 'none',
+            }} />
             <div
               className="subfolder-panel-tab"
               style={{
+                position: 'relative',
                 background: folder.tabColor,
-                color: folder.textColor,
+                color: '#FFFFFF',
+                zIndex: 1,
               }}
             >
               {item.label}
             </div>
-            <div className="subfolder-panel-body">
-              <p className="subfolder-soon" style={{ color: isLight ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)' }}>
+            <div className="subfolder-panel-body" style={{ position: 'relative', zIndex: 1 }}>
+              <p className="subfolder-soon" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 Content coming soon
               </p>
             </div>

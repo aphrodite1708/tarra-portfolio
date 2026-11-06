@@ -7,18 +7,18 @@ interface LandingProps {
   onFolderClick: (id: FolderId) => void
 }
 
-const TAB_HEIGHT = 48
-const BODY_HEIGHT = 200
+const STRIP_HEIGHT = 100  // visible height of each non-front folder
+const BODY_HEIGHT  = 200  // full height of the front folder
 
 export default function Landing({ onFolderClick }: LandingProps) {
   const heroRef = useRef<HTMLDivElement>(null)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
+  const mouseX = useMotionValue(0.5)
+  const mouseY = useMotionValue(0.5)
 
-  const rotateX = useTransform(mouseY, [0, 1], [-6, 6])
-  const rotateY = useTransform(mouseX, [0, 1], [-6, 6])
-  const springRotX = useSpring(rotateX, { damping: 30, stiffness: 200 })
-  const springRotY = useSpring(rotateY, { damping: 30, stiffness: 200 })
+  const rotateX = useTransform(mouseY, [0, 1], [-5, 5])
+  const rotateY = useTransform(mouseX, [0, 1], [-5, 5])
+  const springRotX = useSpring(rotateX, { damping: 32, stiffness: 200 })
+  const springRotY = useSpring(rotateY, { damping: 32, stiffness: 200 })
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = heroRef.current?.getBoundingClientRect()
@@ -31,8 +31,7 @@ export default function Landing({ onFolderClick }: LandingProps) {
     mouseY.set(0.5)
   }
 
-  // stack height: front folder full + 3 tab-only layers behind it
-  const stackHeight = BODY_HEIGHT + (FOLDERS.length - 1) * TAB_HEIGHT
+  const stackHeight = BODY_HEIGHT + (FOLDERS.length - 1) * STRIP_HEIGHT  // 200 + 3*100 = 500
 
   return (
     <motion.div
@@ -52,24 +51,23 @@ export default function Landing({ onFolderClick }: LandingProps) {
       >
         <motion.div
           className="hero-photo-frame"
-          style={{ rotateX: springRotX, rotateY: springRotY, transformPerspective: 800 }}
+          style={{ rotateX: springRotX, rotateY: springRotY, transformPerspective: 900 }}
           initial={{ scale: 0.88, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           <img
-            src="/tarra.jpg"
-            alt="Tarra"
+            src="/tarra.png"
+            alt="Tarra Ananda"
             className="hero-photo"
             onError={(e) => {
               const img = e.currentTarget
               img.style.display = 'none'
-              const parent = img.parentElement
-              if (parent) parent.classList.add('photo-missing')
+              img.parentElement?.classList.add('photo-missing')
             }}
           />
           <div className="photo-fallback">
-            <span>Add your photo to<br /><code>public/tarra.jpg</code></span>
+            <span>Add your photo to<br /><code>public/tarra.png</code></span>
           </div>
         </motion.div>
 
@@ -80,8 +78,8 @@ export default function Landing({ onFolderClick }: LandingProps) {
           transition={{ delay: 0.35, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
         >
           <h1 className="hero-title">
-            <span className="hero-title-script">Tarra's</span>
-            <span className="hero-title-serif">digital portfolio</span>
+            <span className="hero-title-name">Tarra Ananda</span>
+            <span className="hero-title-serif">Digital Portfolio</span>
           </h1>
           <p className="hero-tagline">
             Authentic story-teller that connects brands with audiences<br className="break-desktop" /> through relatable experiences
@@ -94,18 +92,17 @@ export default function Landing({ onFolderClick }: LandingProps) {
         <motion.div
           className="folder-stack"
           style={{ height: stackHeight }}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: 0.5, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Render back-to-front so front folder is on top in DOM */}
+          {/* Render back-to-front; front folder drawn last (highest z-index via CSS) */}
           {[...FOLDERS].reverse().map((folder, reversedIdx) => {
             const idx = FOLDERS.length - 1 - reversedIdx
-            // idx 0 = front (accounting), idx 3 = back (marketing)
-            // front folder sits at bottom: top = (stackHeight - BODY_HEIGHT)
-            // each folder behind it moves up by TAB_HEIGHT
-            const topPos = (FOLDERS.length - 1 - idx) * TAB_HEIGHT
-            const zIdx = idx + 1
+            // idx 0 = Accounting (front/bottom), idx 3 = Marketing (back/top)
+            const topPos = (FOLDERS.length - 1 - idx) * STRIP_HEIGHT
+            // Front folder (idx=0) gets highest z-index so it covers everything below it
+            const zIdx = FOLDERS.length - idx
             const isFront = idx === 0
             const tabAlignRight = idx % 2 === 1
 
@@ -116,7 +113,8 @@ export default function Landing({ onFolderClick }: LandingProps) {
                 style={{
                   top: topPos,
                   zIndex: zIdx,
-                  background: folder.bodyColor,
+                  backgroundColor: folder.bodyColor,
+                  backgroundImage: `url(${folder.image})`,
                   cursor: 'pointer',
                 }}
                 whileHover={{ y: -10, transition: { duration: 0.2, ease: 'easeOut' } }}
@@ -124,26 +122,20 @@ export default function Landing({ onFolderClick }: LandingProps) {
                 role="button"
                 aria-label={`Open ${folder.label}`}
               >
-                {/* Tab label strip — the top part visible for non-front folders */}
+                {/* Color tint overlay — tints image with folder color */}
                 <div
-                  className={`folder-tab-label${tabAlignRight ? ' folder-tab-label--right' : ''}`}
-                  style={{ color: folder.textColor }}
-                >
+                  className="folder-color-tint"
+                  style={{ background: folder.bodyColor }}
+                />
+                {/* Dark gradient at top so label text is always readable */}
+                <div className="folder-label-gradient" />
+
+                {/* Label strip */}
+                <div className={`folder-tab-label${tabAlignRight ? ' folder-tab-label--right' : ''}`}>
                   <span className="folder-tab-category">{folder.shortLabel}</span>
                   <span className="folder-tab-full">{folder.label}</span>
                   {isFront && <span className="folder-open-cue">Open</span>}
                 </div>
-
-                {/* Body — only fully visible on the front folder */}
-                {isFront && (
-                  <div className="folder-body-content" style={{ color: folder.textColor }}>
-                    <div className="folder-body-items">
-                      {folder.items.map(item => (
-                        <span key={item.id} className="folder-body-item">{item.label}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </motion.div>
             )
           })}
